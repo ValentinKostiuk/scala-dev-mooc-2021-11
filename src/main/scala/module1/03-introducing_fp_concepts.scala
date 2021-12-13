@@ -73,7 +73,7 @@ object recursion {
     if (n<=0) 1 else n * factRec(n-1) 
    }
 
- 
+
    def factTailRec(n: Int): Int = {
        @tailrec
        def loop(n: Int, accum: Int): Int = 
@@ -82,7 +82,7 @@ object recursion {
         loop(n, 1)
    }
 
-  
+
 
 
   /**
@@ -103,7 +103,7 @@ object hof{
    case class Record(value: String)
 
    case class Request()
-   
+
    object Request {
        def parse(str: String): Request = ???
    }
@@ -131,7 +131,7 @@ object hof{
        val req: Request = Request.parse(r.value)
             // save(request)
    })
-  
+
 
   // обертки
 
@@ -154,11 +154,11 @@ object hof{
 
   def isOdd(i: Int): Boolean = i % 2 > 0
 
-  
-   
+
+
   def not[A](f: A => Boolean): A => Boolean = a => ! f(a) 
-  
-  
+
+
   lazy val isEven = not(isOdd)
 
 
@@ -216,36 +216,48 @@ object hof{
            case Option.Some(v) => f(v)
            case Option.None => Option.None
        }
+
+       /**
+              *
+              * Реализовать метод printIfAny, который будет печатать значение, если оно есть
+              */
+              def printIfAny(printF: T => Unit): Unit = this match {
+                case Option.None => ()
+                case Option.Some(v) => printF(v)
+              }
+
+             /**
+              *
+              * Реализовать метод zip, который будет создавать Option от пары значений из 2-х Option
+              */
+               def zip[B](that: Option[B]): Option[(T, B)] = (this, that) match {
+                 case (Option.None, _) => Option.None
+                 case (_, Option.None) => Option.None
+                 case (Option.Some(o1), Option.Some(o2)) => Option.Some(o1, o2)
+               }
+
+
+             /**
+              *
+              * Реализовать метод filter, который будет возвращать не пустой Option
+              * в случае если исходный не пуст и предикат от значения = true
+              */
+             def filter(p: T => Boolean): Option[T] = this match {
+              case Option.Some(v) if p(v) => this
+              case _ => Option.None
+             }
    }
+
 
    object Option{
         case class Some[T](v: T) extends Option[T]
         case object None extends Option[Nothing]
 
-        def apply[T](v: T): Option[T] = ???
+        def apply[T](v: T): Option[T] = v match {
+          case v if (v != null) => Some(v)
+          case _ => None
+        }
    }
-
-
-
-
-
-  /**
-   *
-   * Реализовать метод printIfAny, который будет печатать значение, если оно есть
-   */
-
-
-  /**
-   *
-   * Реализовать метод zip, который будет создавать Option от пары значений из 2-х Option
-   */
-
-
-  /**
-   *
-   * Реализовать метод filter, который будет возвращать не пустой Option
-   * в случае если исходный не пуст и предикат от значения = true
-   */
 
  }
 
@@ -263,7 +275,7 @@ object hof{
     case class ::[A](head: A, tail: List[A]) extends List[A]
     case object Nil extends List[Nothing]
 
-    
+
 
 
     /**
