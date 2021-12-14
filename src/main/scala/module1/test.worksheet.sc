@@ -1,5 +1,5 @@
 import module1.opt
-import module1.list
+import module1.list._
 
 val seq = Seq(1, 2, 3) // seq: Seq
 
@@ -27,6 +27,7 @@ opt3.printIfAny(println)
 
 // List validations
 
-val l1 = list.List(1, 2, 3, 4)
-val l2 = list.Nil
-val l3 = 3 :: list.Nil
+val l1 = List(1, 2, 3, 4)
+val l2 = Nil
+val l3 = 3 :: Nil
+val l4 = 7 :: l1
