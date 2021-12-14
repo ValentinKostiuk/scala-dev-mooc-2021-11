@@ -1,4 +1,6 @@
 import module1.opt
+import module1.list
+
 val seq = Seq(1, 2, 3) // seq: Seq
 
 seq.isInstanceOf[Seq[Int]]
@@ -24,3 +26,7 @@ opt2.printIfAny(println)
 opt3.printIfAny(println)
 
 // List validations
+
+val l1 = list.List(1, 2, 3, 4)
+val l2 = list.Nil
+val l3 = 3 :: list.Nil
