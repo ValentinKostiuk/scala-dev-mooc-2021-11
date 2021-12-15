@@ -258,6 +258,19 @@ object list {
       * переданного разделителя
       */
 
+    def mkString(splitter: String) = {
+      @tailrec
+      def aggregateString(list: List[T], aggregated: String): String =
+        list match {
+          case Nil => aggregated
+          case Cons(head, tail) =>
+            if (aggregated.isEmpty) aggregateString(tail, head.toString())
+            else aggregateString(tail, aggregated + splitter + head.toString())
+        }
+
+      aggregateString(this, "")
+    }
+
     /** Реализовать метод reverse который позволит заменить порядок элементов в
       * списке на противоположный
       */
@@ -265,6 +278,18 @@ object list {
     /** Реализовать метод map для списка который будет применять некую ф-цию к
       * элементам данного списка
       */
+
+    def map[B](f: T => B): List[B] = {
+
+      @tailrec
+      def iterate(list: List[T], aggregator: List[B] = Nil): List[B] =
+        list match {
+          case Cons(head, tail) => iterate(tail, f(head) :: aggregator)
+          case Nil              => aggregator
+        }
+
+      iterate(this)
+    }
 
     /** Реализовать метод filter для списка который будет фильтровать список по
       * некому условию
