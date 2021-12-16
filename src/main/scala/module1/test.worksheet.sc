@@ -27,10 +27,10 @@ opt3.printIfAny(println)
 
 // List validations
 
-val l1 = List(1, 2, 3, 4)
+val l1 = List(1, 2, 3, 4, 6, 9, 7, 9)
 val l2 = Nil
 val l3 = 3 :: Nil
-val l4 = 7 :: l1
+val l4 = 8 :: l1
 
 l1.mkString(":")
 l2.mkString("!")
@@ -39,3 +39,13 @@ l3.mkString("\\")
 l1.map(x => x + 3)
 l1.map(x => x + 3).map(x => x.toString)
 l4.map(x => x.toString + "auf").mkString("!! ")
+
+val l1r = l1.reverse()
+
+val l1f = l1.filter(x => x%2 != 0)
+val l1f2 = l1.filter(x => x%2 == 0)
+l1f.mkString("; ")
+l1f2.mkString("; ")
+
+incList(l1).mkString("; ")
+shoutString(l1.map(x => x.toString())).mkString(" ")

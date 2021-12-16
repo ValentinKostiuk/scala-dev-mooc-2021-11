@@ -275,6 +275,17 @@ object list {
       * списке на противоположный
       */
 
+    def reverse(): List[T] = {
+      @tailrec
+      def iterate(list: List[T], aggregator: List[T] = Nil): List[T] =
+        list match {
+          case Cons(head, tail) => iterate(tail, head :: aggregator)
+          case Nil              => aggregator
+        }
+
+      iterate(this)
+    }
+
     /** Реализовать метод map для списка который будет применять некую ф-цию к
       * элементам данного списка
       */
@@ -288,21 +299,25 @@ object list {
           case Nil              => aggregator
         }
 
-      iterate(this)
+      iterate(this).reverse()
     }
 
     /** Реализовать метод filter для списка который будет фильтровать список по
       * некому условию
       */
 
-    /** Написать функцию incList котрая будет принимать список Int и возвращать
-      * список, где каждый элемент будет увеличен на 1
-      */
+    def filter(f: T => Boolean): List[T] = {
 
-    /** Написать функцию shoutString котрая будет принимать список String и
-      * возвращать список, где к каждому элементу будет добавлен префикс в виде
-      * '!'
-      */
+      @tailrec
+      def iterate(list: List[T], aggregator: List[T] = Nil): List[T] =
+        list match {
+          case Cons(head, tail) =>
+            iterate(tail, if (f(head)) head :: aggregator else aggregator)
+          case Nil => aggregator
+        }
+
+      iterate(this).reverse()
+    }
   }
 
   object List {
@@ -320,4 +335,17 @@ object list {
       result
     }
   }
+
+  /** Написать функцию incList котрая будет принимать список Int и возвращать
+    * список, где каждый элемент будет увеличен на 1
+    */
+
+  def incList(list: List[Int]): List[Int] = list.map(_ + 1)
+
+  /** Написать функцию shoutString котрая будет принимать список String и
+    * возвращать список, где к каждому элементу будет добавлен префикс в виде
+    * '!'
+    */
+
+  def shoutString(list: List[String]): List[String] = list.map(x => x.prepended('!'))
 }
