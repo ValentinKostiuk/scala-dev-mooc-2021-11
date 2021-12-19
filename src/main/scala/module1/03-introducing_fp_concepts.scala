@@ -196,7 +196,7 @@ object opt {
     /** Реализовать метод printIfAny, который будет печатать значение, если оно
       * есть
       */
-    def printIfAny(printF: T => Unit): Unit = this match {
+    def printIfAny(printF: T => Unit) = this match {
       case Option.None    => ()
       case Option.Some(v) => printF(v)
     }
@@ -205,9 +205,8 @@ object opt {
       * из 2-х Option
       */
     def zip[B](that: Option[B]): Option[(T, B)] = (this, that) match {
-      case (Option.None, _)                   => Option.None
-      case (_, Option.None)                   => Option.None
       case (Option.Some(o1), Option.Some(o2)) => Option.Some(o1, o2)
+      case _ => Option.None
     }
 
     /** Реализовать метод filter, который будет возвращать не пустой Option в
@@ -247,12 +246,7 @@ object list {
       * воспользоваться названием `::`
       */
 
-    def ::[TT >: T](elem: TT): List[TT] = {
-      this match {
-        case Cons(head, tail) => Cons(elem, Cons(head, tail))
-        case Nil              => Cons(elem, Nil)
-      }
-    }
+    def ::[TT >: T](elem: TT): List[TT] = Cons(elem, this)
 
     /** Метод mkString возвращает строковое представление списка, с учетом
       * переданного разделителя
@@ -260,15 +254,14 @@ object list {
 
     def mkString(splitter: String) = {
       @tailrec
-      def aggregateString(list: List[T], aggregated: String): String =
+      def aggregateString(list: List[T], aggregated: String = ""): String =
         list match {
           case Nil => aggregated
-          case Cons(head, tail) =>
-            if (aggregated.isEmpty) aggregateString(tail, head.toString())
-            else aggregateString(tail, aggregated + splitter + head.toString())
+          case Cons(head, tail) if aggregated.isEmpty => aggregateString(tail, head.toString())
+          case Cons(head, tail) if !aggregated.isEmpty => aggregateString(tail, aggregated + splitter + head.toString())
         }
 
-      aggregateString(this, "")
+      aggregateString(this)
     }
 
     /** Реализовать метод reverse который позволит заменить порядок элементов в
