@@ -2,6 +2,8 @@ import module1.opt
 import module1.list._
 
 val seq = Seq(1, 2, 3) // seq: Seq
+import scala.util.matching.Regex
+val isCyrillic = "['\\p{IsCyrillic}]*".r
 
 seq.isInstanceOf[Seq[Int]]
 seq.isInstanceOf[Seq[String]]
@@ -49,3 +51,5 @@ l1f2.mkString("; ")
 
 incList(l1).mkString("; ")
 shoutString(l1.map(x => x.toString())).mkString(" ")
+
+isCyrillic.matches("Hello")
