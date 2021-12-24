@@ -1,5 +1,8 @@
 package collections
 
+import java.util.Locale
+import module1.adt
+
 object task_collections {
 
   def isASCIIString(str: String): Boolean = str.matches("[A-Za-z]+")
@@ -16,7 +19,11 @@ object task_collections {
    *
    * **/
   def capitalizeIgnoringASCII(text: List[String]): List[String] = {
-    List.empty
+    text.zipWithIndex.collect( kv => kv match {
+      case kv if (kv._2 == 0) => kv._1
+      case kv if(isASCIIString(kv._1)) => kv._1.toUpperCase()
+      case kv => kv._1.toLowerCase()
+    })
   }
 
   /**
@@ -29,7 +36,22 @@ object task_collections {
    * HINT: Для всех возможных комбинаций чисел стоит использовать Map
    * **/
   def numbersToNumericString(text: String): String = {
-    ""
+    val numToStrMap = Map (
+      1 -> "one",
+      2 -> "two",
+      3 -> "three",
+      4 -> "four",
+      5 -> "five",
+      6 -> "six",
+      7 -> "seven",
+      8 -> "eight",
+      9 -> "nine",
+    )
+
+    numToStrMap.foldLeft(text)( (a, b) => {
+      println(a)
+      a.replace(b._1.toString(), b._2)
+    })
   }
 
   /**
