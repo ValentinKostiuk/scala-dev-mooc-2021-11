@@ -46,6 +46,7 @@ object task_collections {
       7 -> "seven",
       8 -> "eight",
       9 -> "nine",
+      10 -> "ten"
     )
 
     numToStrMap.foldLeft(text)( (aggregator, numToStrBinding) => {
@@ -69,7 +70,7 @@ object task_collections {
    * Реализуйте метод который примет две коллекции (два источника) и вернёт объединенный список уникальный значений
    **/
   def intersectionAuto(dealerOne: Iterable[Auto], dealerTwo: Iterable[Auto]): Iterable[Auto] = {
-    (Set.from(dealerOne ++ dealerTwo)).toList
+    Set.from(dealerOne ++ dealerTwo)
   }
 
   /**
@@ -78,6 +79,6 @@ object task_collections {
    * и вернёт уникальный список машин обслуживающихся в первом дилерском центре и не обслуживающимся во втором
    **/
   def filterAllLeftDealerAutoWithoutRight(dealerOne: Iterable[Auto], dealerTwo: Iterable[Auto]): Iterable[Auto] = {
-    dealerOne.filter( a => !dealerTwo.exists( b => b == a))
+    Set.from(dealerOne.filter( a => !dealerTwo.exists( b => b == a)))
   }
 }
