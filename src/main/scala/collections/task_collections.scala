@@ -19,11 +19,11 @@ object task_collections {
    *
    * **/
   def capitalizeIgnoringASCII(text: List[String]): List[String] = {
-    text.zipWithIndex.collect( kv => kv match {
-      case kv if (kv._2 == 0) => kv._1
-      case kv if(isASCIIString(kv._1)) => kv._1.toUpperCase()
-      case kv => kv._1.toLowerCase()
-    })
+    text.zipWithIndex.collect{
+        case (str, 0) => str
+        case (str, index) if isASCIIString(str) => str.toUpperCase
+        case (str, index)  => str.toLowerCase
+      }
   }
 
   /**
@@ -48,9 +48,9 @@ object task_collections {
       9 -> "nine",
     )
 
-    numToStrMap.foldLeft(text)( (a, b) => {
-      println(a)
-      a.replace(b._1.toString(), b._2)
+    numToStrMap.foldLeft(text)( (aggregator, numToStrBinding) => {
+      val (num, str) = numToStrBinding
+      aggregator.replace(num.toString(), str)
     })
   }
 
