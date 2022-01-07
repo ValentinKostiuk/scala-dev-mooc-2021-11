@@ -5,7 +5,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class implicitsTests extends AnyFlatSpec {
 
-  "check two lists" should "merge into one" in {
+  "check two lists" should "create list of all combinations tuple" in {
     assert(tupleF(List(1, 2, 3), List(4, 5, 6)) == List((1,4), (1,5), (1,6), (2,4), (2,5), (2,6), (3,4), (3,5), (3,6)))
   }
 
