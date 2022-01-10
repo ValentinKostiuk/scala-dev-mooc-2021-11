@@ -26,12 +26,15 @@ object task_futures_sequence {
     futures.foldLeft[Future[(List[A], List[Throwable])]](Future.successful(List.empty[A], List.empty[Throwable])) { case (aggregator, future) =>
       aggregator.flatMap { case (sucesses, failures) =>
         future
-          .map(value => ((sucesses.appended(value)), failures))
+          .map(value => ((value +: sucesses), failures))
           .recoverWith { case ex =>
-            Future.successful((sucesses, (failures.appended(ex))))
+            Future.successful((sucesses, (ex +: failures)))
           }
       }
     }
+    .map( f => f match {
+      case (success, failure) => (success.reverse, failure.reverse)
+    })
   }
 
 
