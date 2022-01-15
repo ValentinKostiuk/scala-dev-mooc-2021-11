@@ -27,11 +27,11 @@ object homework_typeClasses {
     def apply[F[_], A](implicit ev: Bindable[F, A]): Bindable[F, A] = ev
   }
 
-  def tupleF[F[_], A, B](fa: F[A], fb: F[B])(implicit bindable: F[A] => Bindable[F, A], bindable2: F[B] => Bindable[F, B]): F[(A, B)] =
+  def tupleF[F[_], A, B](fa: F[A], fb: F[B])(implicit bindA: F[A] => Bindable[F, A], bindB: F[B] => Bindable[F, B]): F[(A, B)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
-  implicit class BindableOps[F[_], A](fa: F[A]) {
-    def tupleF2[B](fb: F[B])(implicit bindable: F[A] => Bindable[F, A], bindable2: F[B] => Bindable[F, B]): F[(A, B)] = tupleF(fa, fb)
+  implicit class BindableOps[F[_], A, B](fa: F[A])(implicit implA: F[A] => Bindable[F, A], implB: F[B] => Bindable[F, B]) {
+    def tupleF2(fb: F[B]): F[(A, B)] = fa.flatMap(a => fb.map( b=> (a, b)))
   }
 
   val optA: Option[Int] = Some(1)
@@ -43,6 +43,7 @@ object homework_typeClasses {
 
   optA.tupleF2(optB)
   optA tupleF2 optB
+  optA tupleF2 optS
 
   tupleF(optA, optB)
   tupleF(optA, optS)

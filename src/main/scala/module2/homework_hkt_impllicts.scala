@@ -6,7 +6,7 @@ object homework_hkt_impllicts {
     * возможны подобные вызовы val r1 = println(tupleF(optA, optB)) val r2 =
     * println(tupleF(list1, list2))
     */
-  def tupleF[F[_], A](fa: F[A], fb: F[A])(implicit bindable: F[A] => Bindable[F, A]): F[(A, A)] =
+  def tupleF[F[_], A](fa: F[A], fb: F[A])(implicit bindA: F[A] => Bindable[F, A]): F[(A, A)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
   trait Bindable[F[_], A] {
@@ -28,10 +28,12 @@ object homework_hkt_impllicts {
 
   val optA: Option[Int] = Some(1)
   val optB: Option[Int] = Some(2)
+  val optS: Option[String] = Some("Str")
 
   val list1 = List(1, 2, 3)
   val list2 = List(4, 5, 6)
 
   val r1 = println(tupleF(optA, optB))
+  val r3 = println(tupleF(optA, optS))
   val r2 = println(tupleF(list1, list2))
 }
