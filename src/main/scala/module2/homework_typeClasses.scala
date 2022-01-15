@@ -27,7 +27,7 @@ object homework_typeClasses {
     def apply[F[_], A](implicit ev: Bindable[F, A]): Bindable[F, A] = ev
   }
 
-  def tupleF[F[_], A, B](fa: F[A], fb: F[B])(implicit bindA: F[A] => Bindable[F, A], bindB: F[B] => Bindable[F, B]): F[(A, B)] =
+  def tupleF[F[_], A](fa: F[A], fb: F[A])(implicit bindA: F[A] => Bindable[F, A]): F[(A, A)] =
     fa.flatMap(a => fb.map(b => (a, b)))
 
   implicit class BindableOps[F[_], A, B](fa: F[A])(implicit implA: F[A] => Bindable[F, A], implB: F[B] => Bindable[F, B]) {
