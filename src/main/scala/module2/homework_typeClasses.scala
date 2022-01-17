@@ -2,36 +2,35 @@ package module2
 
 object homework_typeClasses {
 
-  trait Bindable[F[_], A] {
-    def map[B](f: A => B): F[B]
-    def flatMap[B](f: A => F[B]): F[B]
+  trait Bindable[F[_]] {
+    def map[A, B](fa: F[A])(f: A => B): F[B]
+    def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]
   }
 
   object Bindable {
-    implicit def optionBindable[F[_], A](fa: Option[A]): Bindable[Option, A] =
-      new Bindable[Option, A] {
-        def map[B](f: A => B): Option[B] = fa.map(f)
-
-        def flatMap[B](f: A => Option[B]): Option[B] = fa.flatMap(f)
-
+    implicit def optionBindable[F[_]]: Bindable[Option] =
+      new Bindable[Option] {
+        def map[A, B](fa: Option[A])(f: A => B): Option[B] = fa.map(f)
+        
+        def flatMap[A, B](fa: Option[A])(f: A => Option[B]): Option[B] = fa.flatMap(f)
+        
       }
 
-    implicit def listBindable[F[_], A](fa: List[A]): Bindable[List, A] =
-      new Bindable[List, A] {
-        def map[B](f: A => B): List[B] = fa.map(f)
-
-        def flatMap[B](f: A => List[B]): List[B] = fa.flatMap(f)
-
+    implicit def listBindable[F[_]]: Bindable[List] =
+      new Bindable[List] {
+        def map[A, B](fa: List[A])(f: A => B): List[B] = fa.map(f)
+        
+        def flatMap[A, B](fa: List[A])(f: A => List[B]): List[B] = fa.flatMap(f)
+        
       }
 
-    def apply[F[_], A](implicit ev: Bindable[F, A]): Bindable[F, A] = ev
+    def apply[F[_]](implicit ev: Bindable[F]): Bindable[F] = ev
   }
 
-  def tupleF[F[_], A](fa: F[A], fb: F[A])(implicit bindA: F[A] => Bindable[F, A]): F[(A, A)] =
-    fa.flatMap(a => fb.map(b => (a, b)))
+  def tupleF[F[_], A, B](fa: F[A], fb: F[B])(implicit bind: Bindable[F]): F[(A, B)] = bind.flatMap(fa)(a => bind.map(fb)(b => (a, b)))
 
-  implicit class BindableOps[F[_], A, B](fa: F[A])(implicit implA: F[A] => Bindable[F, A], implB: F[B] => Bindable[F, B]) {
-    def tupleF2(fb: F[B]): F[(A, B)] = fa.flatMap(a => fb.map( b=> (a, b)))
+  implicit class BindableOps[F[_], A](fa: F[A])(implicit bind: Bindable[F]) {
+    def tupleF2[B](fb: F[B]): F[(A, B)] = bind.flatMap(fa)(a => bind.map(fb)(b => (a, b)))
   }
 
   val optA: Option[Int] = Some(1)
