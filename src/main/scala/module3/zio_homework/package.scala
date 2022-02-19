@@ -19,16 +19,32 @@ package object zio_homework {
    * и печатать в когнсоль угадал или нет. Подумайте, на какие наиболее простые эффекты ее можно декомпозировать.
    */
 
+   def result(genNumber: Int, enterNumber: Int): ZIO[Console, Throwable, Unit] = ZIO.effect(if (genNumber == enterNumber) putStr("Congrats! you are winner!")
+                                                                                         else putStr(s"You are wrong, righ number is $genNumber. Please, try again"))
 
+  lazy val readInt: ZIO[Console,Throwable,Int] = getStrLn.flatMap(str => ZIO.effect(str.toInt))
 
-  lazy val guessProgram = ???
+  lazy val readIntOrRetry: ZIO[Console,Throwable,Int] = readInt.orElse(
+    putStrLn("Incorrect input! Only Numbers allowed. Try again.") *> readIntOrRetry
+  )
+
+  lazy val guessProgram = for {
+    _ <- putStr("Hello! Lets Play game! Guess number between one and three and put it into consle.")
+    num <- nextIntBetween(1, 3)
+    guessedNumber <- readIntOrRetry
+    _ <- putStr(s"$guessedNumber")
+    _ <- ZIO.ifM(ZIO.effect(num == guessedNumber))(
+        putStr(s"You guessed! My number was $num."),
+        putStr(s"You failed! My number was $num.")
+      )
+  } yield ()
 
   /**
    * 2. реализовать функцию doWhile (общего назначения), которая будет выполнять эффект до тех пор, пока его значение в условии не даст true
    * 
    */
 
-  def doWhile = ???
+  def doWhile(condition: Task[Boolean]): ZIO[Any, Throwable, Unit] = ZIO.ifM(condition)(ZIO.succeed(()), ZIO.succeed(()) *> doWhile(condition))
 
   /**
    * 3. Реализовать метод, который безопасно прочитает конфиг из файла, а в случае ошибки вернет дефолтный конфиг
