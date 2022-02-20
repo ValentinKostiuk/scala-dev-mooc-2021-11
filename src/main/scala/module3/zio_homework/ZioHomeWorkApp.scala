@@ -7,15 +7,18 @@ import java.util.Calendar
 
 object ZioHomeWorkApp extends zio.App {
   override def run(args: List[String]): URIO[Clock with Random with Console, ExitCode] = {
-    def result: ZIO[Random with Console, Throwable, Unit] = for {
+    def result: ZIO[Clock with Random with Console, Throwable, Unit] = for {
       _ <- guessProgram
       _ <- doWhile(ZIO.succeed({
         val now = Calendar.getInstance()
-        val currentMinute = now.get(Calendar.SECOND)
-        println(s"$currentMinute")
-        currentMinute % 2 == 0
+        val curMill = now.get(Calendar.MILLISECOND)
+        println(s"$curMill")
+        curMill % 2 == 0
       }))
-      _ <- putStr("All done")
+      _ <- loadConfigOrDefault
+      _ <- app
+      _ <- appSpeedUp
+      _ <- putStrLn("All done")
       _ <- getStrLn
     } yield()
 
