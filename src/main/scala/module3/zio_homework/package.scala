@@ -11,6 +11,7 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import scala.io.StdIn
 import scala.language.postfixOps
+import zio.ZEnv
 
 package object zio_homework {
 
@@ -121,7 +122,7 @@ package object zio_homework {
         start <- currentTime
         z <- zio
         finish <- currentTime
-        _ <- putStrLn(s"Running time: ${finish - start}")
+        _ <- putStrLn(s"TimerService.Running time: ${finish - start}")
       } yield z
 
     })
@@ -142,8 +143,6 @@ package object zio_homework {
     * ZioHomeWorkApp
     */
 
-  lazy val runApp: ZIO[TimerService with Console with Clock with Random,Nothing,Unit] = for {
-    _ <- appWithTimeLogg
-  } yield ()
+  lazy val runApp: ZIO[ZEnv, Nothing, Int] = appWithTimeLogg.provideCustomLayer(TimerService.live)
 
 }
