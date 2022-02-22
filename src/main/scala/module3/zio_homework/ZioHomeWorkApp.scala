@@ -4,10 +4,11 @@ import zio.console._
 import zio.random.Random
 import zio.{ExitCode, URIO, ZIO}
 import java.util.Calendar
+import zio.ZEnv
 
 object ZioHomeWorkApp extends zio.App {
-  override def run(args: List[String]): URIO[Clock with Random with Console, ExitCode] = {
-    def result: ZIO[Clock with Random with Console, Throwable, Unit] = for {
+  def run(args: List[String]): URIO[ZEnv,ExitCode] = {
+  def result: ZIO[TimerService with Console with Clock with Random, Throwable, Unit] = for {
       _ <- guessProgram
       _ <- doWhile(ZIO.succeed({
         val now = Calendar.getInstance()
@@ -17,7 +18,7 @@ object ZioHomeWorkApp extends zio.App {
       }))
       _ <- loadConfigOrDefault
       _ <- app
-      _ <- appSpeedUp
+      _ <- appWithTimeLogg
       _ <- putStrLn("All done")
       _ <- getStrLn
     } yield()

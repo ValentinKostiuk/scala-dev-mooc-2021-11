@@ -14,10 +14,10 @@ import scala.language.postfixOps
 
 package object zio_homework {
 
-  /** 1. Используя сервисы Random и Console, напишите консольную ZIO программу
-    * которая будет предлагать пользователю угадать число от 1 до 3 и печатать в
-    * когнсоль угадал или нет. Подумайте, на какие наиболее простые эффекты ее
-    * можно декомпозировать.
+  /**   1. Используя сервисы Random и Console, напишите консольную ZIO программу
+    *      которая будет предлагать пользователю угадать число от 1 до 3 и
+    *      печатать в когнсоль угадал или нет. Подумайте, на какие наиболее
+    *      простые эффекты ее можно декомпозировать.
     */
 
   def result(genNumber: Int, enterNumber: Int): ZIO[Console, Throwable, Unit] =
@@ -30,10 +30,16 @@ package object zio_homework {
   lazy val readInt: ZIO[Console, Throwable, Int] =
     getStrLn.flatMap(str => ZIO.effect(str.toInt))
 
-  lazy val readIntOrRetry: ZIO[Console, Throwable, Int] = readInt.orElse(putStrLn("Incorrect input! Only Numbers allowed. Try again.") *> readIntOrRetry)
+  lazy val readIntOrRetry: ZIO[Console, Throwable, Int] = readInt.orElse(
+    putStrLn(
+      "Incorrect input! Only Numbers allowed. Try again."
+    ) *> readIntOrRetry
+  )
 
   lazy val guessProgram = for {
-    _ <- putStr("Hello! Lets Play game! Guess number between one and three and put it into consle.")
+    _ <- putStr(
+      "Hello! Lets Play game! Guess number between one and three and put it into consle."
+    )
     num <- nextIntBetween(1, 3)
     guessedNumber <- readIntOrRetry
     _ <- putStr(s"$guessedNumber")
@@ -81,7 +87,7 @@ package object zio_homework {
     * затраченное время на выполнение, можно использовать ф-цию
     * printEffectRunningTime, которую мы разработали на занятиях
     */
-import module3.zioConcurrency._
+  import module3.zioConcurrency._
   lazy val app = for {
     sum <- printEffectRunningTime(ZIO.collectAll(effects).map(l => l.sum))
     _ <- putStrLn(sum.toString())
@@ -91,8 +97,8 @@ import module3.zioConcurrency._
     * выполнения
     */
 
-  lazy val appSpeedUp = for {
-    sum <- printEffectRunningTime(ZIO.collectAllPar(effects).map(l => l.sum))
+  lazy val appSpeedUp: ZIO[Clock with Random with Console, Nothing, Int] = for {
+    sum <- ZIO.collectAllPar(effects).map(l => l.sum)
     _ <- putStrLn(sum.toString())
   } yield sum
 
@@ -101,16 +107,43 @@ import module3.zioConcurrency._
     * zio.console.putStrLn например
     */
 
+  type TimerService = Has[TimerService.Service]
+  
+  @accessible
+  object TimerService {
+
+    trait Service {
+      def printEffectRunningTime[R, E, A](zio: ZIO[R, E, A]): ZIO[Console with Clock with R, E, A]
+    }
+
+    val live: ULayer[Has[Service]] = ZLayer.succeed(new Service{
+      def printEffectRunningTime[R, E, A](zio: ZIO[R,E,A]): ZIO[Console with Clock with R,E,A] = for {
+        start <- currentTime
+        z <- zio
+        finish <- currentTime
+        _ <- putStrLn(s"Running time: ${finish - start}")
+      } yield z
+
+    })
+
+    //def printEffectRunningTime[R, E, A](zio: ZIO[R,E,A]): ZIO[ TimerService with Console with Clock with R,E,A] = ZIO.accessM(_.get.printEffectRunningTime(zio))
+
+  }
+
   /** 6. Воспользуйтесь написанным сервисом, чтобы созадть эффект, который будет
     * логировать время выполнения прогаммы из пункта 4.3
     */
 
-  lazy val appWithTimeLogg = ???
+  lazy val appWithTimeLogg: ZIO[TimerService with Console with Clock with Random, Nothing, Int] = for {
+    sum <- TimerService.printEffectRunningTime(appSpeedUp)
+  } yield sum
 
   /** Подготовьте его к запуску и затем запустите воспользовавшись
     * ZioHomeWorkApp
     */
 
-  lazy val runApp = ???
+  lazy val runApp: ZIO[TimerService with Console with Clock with Random,Nothing,Unit] = for {
+    _ <- appWithTimeLogg
+  } yield ()
 
 }
