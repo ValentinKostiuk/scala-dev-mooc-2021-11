@@ -64,7 +64,7 @@ package object zio_homework {
 
   import module3.zio_homework.config._
   def loadConfigOrDefault = for {
-    cfg <- load.orElse(ZIO.effect(AppConfig))
+    cfg <- load.orElse(ZIO.effect(AppConfig("default name", "default URL")))
     _ <- putStrLn(cfg.toString())
   } yield ()
 
